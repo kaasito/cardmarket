@@ -20,12 +20,21 @@ use App\Http\Controllers\ColeccionsController;
 Route::prefix('usuarios')->group(function(){
     Route::post('/registrar', [UsuariosController::class, 'registrar']);
     Route::put('/login',[UsuariosController::class,'login']);
+    Route::post('/recuperarPass',[UsuariosController::class,'recuperarPass']);
     });
 
+
+Route::middleware(['check-admin', 'check-venta'])->group(function () { 
  Route::prefix('cartas')->group(function(){
     Route::post('/crear', [CartasController::class, 'crear']);
+    Route::post('/venta', [CartasController::class, 'venta'])->withoutMiddleware(['check-admin']); 
+    Route::post('/buscarparavender', [CartasController::class, 'buscarparavender'])->withoutMiddleware(['check-admin']);
+    Route::post('/buscaralaventa', [CartasController::class, 'buscaralaventa'])->withoutMiddleware(['check-admin']);
+    Route::post('/alta', [CartasController::class, 'alta']); //no hace falta¿?¿?
     });
-
-    Route::prefix('colecciones')->group(function(){
+});
+Route::middleware(['check-admin'])->group(function () { 
+Route::prefix('colecciones')->group(function(){
         Route::post('/crear', [ColeccionsController::class, 'crear']);
     });
+});

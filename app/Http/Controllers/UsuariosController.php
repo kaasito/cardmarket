@@ -52,15 +52,42 @@ class UsuariosController extends Controller
         $jdatos = $req->getContent();
         $datos = json_decode($jdatos);
 
-        $usuario = Usuario::where('email', $datos->email)->first();
+        $usuario = Usuario::where('nickname', $datos->nickname)->first();
         if($usuario && Hash::check($datos->password, $usuario->password)){
             $token = Hash::make(now().$usuario->email); //creación del token
             $usuario->api_token = $token;
             $usuario->save();
+            $respuesta["msg"] = "Sesión Iniciada";
             $respuesta["token"] = $token;
         }else{
             $respuesta["msg"] = 401;
         }
         return response()->json($respuesta);
     }
+    public function recuperarPass(Request $req){
+        $jdatos = $req->getContent();
+        $datos = json_decode($jdatos);
+
+        $usuario = Usuario::where('email', $datos->email)->first();
+        if($usuario){
+           $password = generarPass("abcdefghijklmnopqrstuvwxyz1234567890¿?!¡_",8);
+           $usuario->password = Hash::make($password);
+           $usuario->save();
+           $respuesta["password"] = "Nueva contraseña: ".$password;
+        }else{
+            $respuesta["msg"] = 401;
+            $respuesta["error"] = "no se ha encontrado un usuario con ese email";
+        }
+        return response()->json($respuesta);
+    }
+    
+}
+function generarPass($opciones, $lengt = 5){
+    
+    $charactersLenght = strlen($opciones);
+    $randomString = '';
+    for ($i=0; $i < $lengt; $i++) {
+        $randomString .= $opciones[rand(0, $charactersLenght - 1)];
+    }
+    return $randomString;
 }

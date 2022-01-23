@@ -82,4 +82,7 @@ class ColeccionsController extends Controller
        
         return response()->json($respuesta);
     }
+    public function alta(Request $req){
+        //administrador
+    }
 }

@@ -15,8 +15,8 @@ class CreateVentasTable extends Migration
     {
         Schema::create('ventas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("id_usuarios")->constrained("usuarios");
-            $table->foreignId("id_cartas")->constrained("cartas");
+            $table->foreignId("id_usuario")->constrained("usuarios");
+            $table->foreignId("id_carta")->constrained("cartas");
             $table->integer("precio");
             $table->integer("cantidad");
             $table->timestamps();
