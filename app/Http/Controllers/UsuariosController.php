@@ -82,6 +82,7 @@ class UsuariosController extends Controller
     }
     
 }
+
 function generarPass($opciones, $lengt = 5){
     
     $charactersLenght = strlen($opciones);

@@ -26,10 +26,10 @@ Route::prefix('usuarios')->group(function(){
 
 Route::middleware(['check-admin', 'check-venta'])->group(function () { 
  Route::prefix('cartas')->group(function(){
-    Route::post('/crear', [CartasController::class, 'crear']);
-    Route::post('/venta', [CartasController::class, 'venta'])->withoutMiddleware(['check-admin']); 
-    Route::post('/buscarparavender', [CartasController::class, 'buscarparavender'])->withoutMiddleware(['check-admin']);
-    Route::post('/buscaralaventa', [CartasController::class, 'buscaralaventa'])->withoutMiddleware(['check-admin']);
+    Route::post('/crear', [CartasController::class, 'crear'])->withoutMiddleware(['check-venta']); 
+    Route::post('/venta', [CartasController::class, 'venta'])->withoutMiddleware(['check-admin', 'check-venta']); 
+    Route::get('/buscarparavender', [CartasController::class, 'buscarparavender'])->withoutMiddleware(['check-admin']);
+    Route::get('/buscaralaventa', [CartasController::class, 'buscaralaventa'])->withoutMiddleware(['check-admin','check-venta']);
     Route::post('/alta', [CartasController::class, 'alta']); //no hace falta¿?¿?
     });
 });

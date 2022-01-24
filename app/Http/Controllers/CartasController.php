@@ -8,6 +8,7 @@ use App\Models\Coleccion;
 use App\Models\Pertenece;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CartasController extends Controller
@@ -61,6 +62,7 @@ class CartasController extends Controller
             $datos = $req->getContent();
             $datos = json_decode($datos);
             $usuario = Usuario::where('Api_token', $datos->Api_token)->first();
+            $carta = Carta::find($datos->id_carta);
             if(Venta::where("id_carta", $datos->id_carta)->first()){
                 $respuesta["status"] = 0;
                 $respuesta["msg"] = "La carta ya esta a la venta";
@@ -70,6 +72,7 @@ class CartasController extends Controller
                 $venta->cantidad = $datos->cantidad;
                 $venta->precio = $datos->precio_total;
                 $venta->id_usuario = $usuario->id;
+                $venta->nombre_carta = $carta->nombre;
                 $venta->save();
                 $respuesta["status"] = 1;
                 $respuesta["msg"] = "Carta en venta";
@@ -96,6 +99,61 @@ class CartasController extends Controller
         $carta = Carta::where('id', $datos->id_carta)->first();
         $carta->alta = $datos->alta;
         $respuesta["msg"] = "Carta dada de alta";
+    }
+    public function buscarparavender(Request $req){
+        $respuesta = ["status" => 1, "msg" => ""];
+        $datos = $req->input('filtro', '');
+       
+        
+
+        try{
+            $peticion = DB::table('cartas');
+
+            if($datos != '') {
+                $peticion->where('nombre', 'like', '%'.$datos.'%');
+            }
+            $respuesta["status"] = 1;
+            $respuesta["msg"] = "Mostrando todos los cursos";
+            $respuesta["datos"] = $peticion->distinct()->get();
+
+        }catch(\Exception $e){
+            $respuesta["msg"] = $e ->getMessage();
+            $respuesta["status"] = 0;
+        }
+
+        return response()->json($respuesta);
+    }
+    public function buscaralaventa(Request $req){
+        $respuesta = ["status" => 1, "msg" => ""];
+        $datos = $req->input('filtro', '');
+
+        try{
+            if($datos != '') {
+                $ventas = Venta::where('nombre_carta', 'like', '%'.$datos.'%')->distinct()->get()->toArray();
+            }
+
+            usort($ventas, function($object1, $object2){
+                return $object1->precio > $object2->precio;
+            });
+
+            if(count($ventas) == 0){
+                $respuesta["status"] = 0;
+                $respuesta["msg"] = "no se han encontrado Coincidencias";
+            }else{
+                $respuesta["status"] = 1;
+                $respuesta["msg"] = "Mostrando todos los ventas";
+                $respuesta["datos"] = $ventas;
+            }
+            
+
+        }catch(\Exception $e){
+            $respuesta["msg"] = $e ->getMessage();
+            $respuesta["status"] = 0;
+        }
+
+
+
+        return response()->json($respuesta);
     }
     
 
