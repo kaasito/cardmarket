@@ -67,6 +67,9 @@ class CartasController extends Controller
                 $respuesta["status"] = 0;
                 $respuesta["msg"] = "La carta ya esta a la venta";
             }else{
+                $carta = Carta::find($datos->id_carta);
+                $carta->alta = '1';
+                $carta->save();
                 $venta = new Venta();
                 $venta->id_carta = $datos->id_carta;
                 $venta->cantidad = $datos->cantidad;
@@ -110,10 +113,15 @@ class CartasController extends Controller
             $peticion = DB::table('cartas');
 
             if($datos != '') {
-                $peticion->where('nombre', 'like', '%'.$datos.'%');
+                $cartasalaventa = Carta::where('alta', '0');
+                $peticion->where('nombre', 'like', '%'.$datos.'%')->where('alta','0');
+            }else{
+                $respuesta["status"] = 0;
+                $respuesta["msg"] = "Introduce un filtro";
+                return response()->json($respuesta);
             }
             $respuesta["status"] = 1;
-            $respuesta["msg"] = "Mostrando todos los cursos";
+            $respuesta["msg"] = "Mostrando todass las cartas";
             $respuesta["datos"] = $peticion->distinct()->get();
 
         }catch(\Exception $e){

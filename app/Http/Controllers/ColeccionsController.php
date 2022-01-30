@@ -72,7 +72,7 @@ class ColeccionsController extends Controller
                 $pertenece->id_carta = $carta->id; 
                 $pertenece->save();
                 $respuesta["status"] = 1;
-                $respuesta["msg"] = "Carta creada con éxito";
+                $respuesta["msg"] = "Coleccion creada con éxito";
             }catch(\Exception $e){
                 $respuesta["status"] = 0;
                 $respuesta["msg"] = $e ->getMessage();

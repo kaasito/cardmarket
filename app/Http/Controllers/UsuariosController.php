@@ -70,7 +70,7 @@ class UsuariosController extends Controller
 
         $usuario = Usuario::where('email', $datos->email)->first();
         if($usuario){
-           $password = generarPass("abcdefghijklmnopqrstuvwxyz1234567890¿?!¡_",8);
+           $password = generarPass("abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ",8);
            $usuario->password = Hash::make($password);
            $usuario->save();
            $respuesta["password"] = "Nueva contraseña: ".$password;
