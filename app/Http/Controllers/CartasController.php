@@ -69,23 +69,18 @@ class CartasController extends Controller
             $datos = json_decode($datos);
             $usuario = Usuario::where('Api_token', $datos->Api_token)->first();
             $carta = Carta::find($datos->id_carta);
-            if(Venta::where("id_carta", $datos->id_carta)->first()){
-                $respuesta["status"] = 0;
-                $respuesta["msg"] = "La carta ya esta a la venta";
-            }else{
-                $carta = Carta::find($datos->id_carta);
-                $carta->alta = '1';
-                $carta->save();
-                $venta = new Venta();
-                $venta->id_carta = $datos->id_carta;
-                $venta->cantidad = $datos->cantidad;
-                $venta->precio = $datos->precio_total;
-                $venta->id_usuario = $usuario->id;
-                $venta->nombre_carta = $carta->nombre;
-                $venta->save();
-                $respuesta["status"] = 1;
-                $respuesta["msg"] = "Carta en venta";
-            }
+            $carta->alta = '1';
+            $carta->save();
+            $venta = new Venta();
+            $venta->id_carta = $datos->id_carta;
+            $venta->cantidad = $datos->cantidad;
+            $venta->precio = $datos->precio_total;
+            $venta->id_usuario = $usuario->id;
+            $venta->nombre_carta = $carta->nombre;
+            $venta->save();
+            $respuesta["status"] = 1;
+            $respuesta["msg"] = "Carta en venta";
+            
     
            
         } 
