@@ -46,7 +46,7 @@ class UsuarioValido
                     break;
                 }
 
-                if($permiso == 1){
+                if($permiso == 1 || $permiso == 3){
                     return $next($req); //Pasar a la siguiente condicion o en su defecto Controller
                 }else{
                     return response("No tienes permisos para hacer eso, tu puesto de trabajo es ".$rol, 401);

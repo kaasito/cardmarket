@@ -21,19 +21,25 @@ Route::prefix('usuarios')->group(function(){
     Route::post('/registrar', [UsuariosController::class, 'registrar']);
     Route::post('/login',[UsuariosController::class,'login']);
     Route::post('/recuperarPass',[UsuariosController::class,'recuperarPass']);
-    });
+});
 
+Route::prefix('cartas')->group(function(){
+    Route::get('/buscaralaventa', [CartasController::class, 'buscaralaventa']);
+});   
 
-Route::middleware(['check-admin', 'check-venta'])->group(function () { 
- Route::prefix('cartas')->group(function(){
-    Route::post('/crear', [CartasController::class, 'crear'])->withoutMiddleware(['check-venta']); 
-    Route::post('/venta', [CartasController::class, 'venta'])->withoutMiddleware(['check-admin']); 
-    Route::get('/buscarparavender', [CartasController::class, 'buscarparavender'])->withoutMiddleware(['check-admin']);
-    Route::get('/buscaralaventa', [CartasController::class, 'buscaralaventa'])->withoutMiddleware(['check-admin','check-venta']);
+Route::middleware('check-venta')->group(function () { 
+    Route::prefix('cartas')->group(function(){
+        Route::post('/venta', [CartasController::class, 'venta']); 
+        Route::get('/buscarparavender', [CartasController::class, 'buscarparavender']);
     });
 });
 Route::middleware(['check-admin'])->group(function () { 
-Route::prefix('colecciones')->group(function(){
+    Route::prefix('colecciones')->group(function(){
         Route::post('/crear', [ColeccionsController::class, 'crear']);
     });
+    Route::prefix('cartas')->group(function(){
+        Route::post('/crear', [CartasController::class, 'crear']); 
+        Route::post('/asociar', [CartasController::class, 'asociar']); 
+    });
+   
 });

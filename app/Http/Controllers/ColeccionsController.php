@@ -91,5 +91,40 @@ class ColeccionsController extends Controller
        
         return response()->json($respuesta);
     }
+
+    public function asociar(Request $req){
+       
+        $respuesta = ["status" => 1, "msg" => ""];
+        $datos = $req->getContent();
+        $datos = json_decode($datos);
+
+        if(isset($datos->id_carta) && isset($datos->id_coleccion)){
+            try{
+                $validator = Validator::make(json_decode($req->getContent(), true), [
+                    'id_carta' => 'required',
+                    'id_coleccion' => 'required'
+                ]);
+    
+                if($validator->fails()){
+                    $respuesta = ['status'=>0, 'msg'=>$validator->errors()->first()]; //si los datos introducidos son erroneos salta un error
+                }else{
+                    $pertenece = new Pertenece();
+                    $pertenece->id_carta = $datos->id_carta;
+                    $pertenece->id_coleccion = $datos->id_coleccion;
+                    $pertenece->save();
+                    $respuesta["msg"] = "Asociación exitosa";
+                }
+            }catch(\Exception $e){
+                $respuesta["status"] = 0;
+                $respuesta["msg"] = $e ->getMessage();
+            }
+           
+        }else{
+            $respuesta["status"] = 0;
+            $respuesta["msg"] = "debe uste de poner el id de la carta y el id de la coleccion a la que la quiere asociar";
+        }
+       
+        return response()->json($respuesta);
+    } 
    
 }

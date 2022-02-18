@@ -22,11 +22,10 @@ class UsuariosController extends Controller
             'email' => 'required|unique:usuarios',
         ]);
         
-        if ($validator->fails()) {
+        if($validator->fails()){
             $respuesta["msg"] = $validator->errors()->first();
             $respuesta["status"] = 0;
-        } else {
-
+        }else{
             $respuesta = ["status" => 1, "msg" => ""];
             $datos = $req->getContent();
             $datos = json_decode($datos);
