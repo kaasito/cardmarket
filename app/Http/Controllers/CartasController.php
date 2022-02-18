@@ -9,6 +9,7 @@ use App\Models\Pertenece;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class CartasController extends Controller
@@ -25,6 +26,9 @@ class CartasController extends Controller
             $datos = $req->getContent();
             $datos = json_decode($datos);
            
+            if($validator->fails()){
+                $respuesta = ['status'=>0, 'msg'=>$validator->errors()->first()]; //si los datos introducidos son erroneos salta un error
+            }else{
             if(Coleccion::where("id", $datos->id_coleccion)->first()){
                 $carta = new Carta();
                 $carta->nombre = $datos->nombre;
@@ -41,7 +45,7 @@ class CartasController extends Controller
                 $respuesta["msg"] = "La coleccion no existe";
             }
     
-           
+        }  
           
          }catch(\Exception $e){
             $respuesta["status"] = 0;
@@ -57,7 +61,9 @@ class CartasController extends Controller
                 'precio_total' => 'required'
             ]);
            
-          
+            if($validator->fails()){
+                $respuesta = ['status'=>0, 'msg'=>$validator->errors()->first()]; //si los datos introducidos son erroneos salta un error
+            }else{
             $respuesta = ["status" => 1, "msg" => ""];
             $datos = $req->getContent();
             $datos = json_decode($datos);
@@ -82,7 +88,7 @@ class CartasController extends Controller
             }
     
            
-          
+        } 
          }catch(\Exception $e){
             $respuesta["status"] = 0;
             $respuesta["msg"] = $e ->getMessage();
@@ -107,19 +113,17 @@ class CartasController extends Controller
         $respuesta = ["status" => 1, "msg" => ""];
         $datos = $req->input('filtro', '');
        
-        
-
         try{
             $peticion = DB::table('cartas');
 
             if($datos != '') {
-                $cartasalaventa = Carta::where('alta', '0');
                 $peticion->where('nombre', 'like', '%'.$datos.'%')->where('alta','0');
             }else{
                 $respuesta["status"] = 0;
                 $respuesta["msg"] = "Introduce un filtro";
                 return response()->json($respuesta);
             }
+            
             $respuesta["status"] = 1;
             $respuesta["msg"] = "Mostrando todass las cartas";
             $respuesta["datos"] = $peticion->distinct()->get();

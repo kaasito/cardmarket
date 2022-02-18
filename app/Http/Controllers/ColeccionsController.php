@@ -30,6 +30,9 @@ class ColeccionsController extends Controller
                     'id_carta' => 'required',
                 ]);
     
+                if($validator->fails()){
+                    $respuesta = ['status'=>0, 'msg'=>$validator->errors()->first()]; //si los datos introducidos son erroneos salta un error
+                }else{
                 if(Carta::where("id", $datos->id_carta)->first()){ 
                     $coleccion = new Coleccion();
                     $coleccion->nombre = $datos->nombre;
@@ -45,6 +48,7 @@ class ColeccionsController extends Controller
                     $respuesta["status"] = 0;
                     $respuesta["msg"] = "La carta no existe";
                 }
+            }
             }catch(\Exception $e){
                 $respuesta["status"] = 0;
                 $respuesta["msg"] = $e ->getMessage();
@@ -59,6 +63,9 @@ class ColeccionsController extends Controller
                     'carta_descripcion' => 'required',
                 ]);
                 
+            if($validator->fails()){
+                $respuesta = ['status'=>0, 'msg'=>$validator->errors()->first()]; //si los datos introducidos son erroneos salta un error
+            }else{
                 $coleccion = new Coleccion();
                 $coleccion->nombre = $datos->nombre;
                 $coleccion->imagen = $datos->imagen;
@@ -73,6 +80,8 @@ class ColeccionsController extends Controller
                 $pertenece->save();
                 $respuesta["status"] = 1;
                 $respuesta["msg"] = "Coleccion creada con éxito";
+            }
+                
             }catch(\Exception $e){
                 $respuesta["status"] = 0;
                 $respuesta["msg"] = $e ->getMessage();
@@ -82,7 +91,5 @@ class ColeccionsController extends Controller
        
         return response()->json($respuesta);
     }
-    public function alta(Request $req){
-        //administrador
-    }
+   
 }
