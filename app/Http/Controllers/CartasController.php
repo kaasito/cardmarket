@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+
 class CartasController extends Controller
 {
     public function crear(Request $req){ 
@@ -76,7 +77,6 @@ class CartasController extends Controller
             $venta->cantidad = $datos->cantidad;
             $venta->precio = $datos->precio_total;
             $venta->id_usuario = $usuario->id;
-            $venta->nombre_carta = $carta->nombre;
             $venta->save();
             $respuesta["status"] = 1;
             $respuesta["msg"] = "Carta en venta";
@@ -136,7 +136,12 @@ class CartasController extends Controller
 
         try{
             if($datos != '') {
-                $ventas = Venta::where('nombre_carta', 'like', '%'.$datos.'%')->distinct()->get()->toArray();
+                // $ventas = Venta::where('nombre_carta', 'like', '%'.$datos.'%')->distinct()->get()->toArray();
+                $ventas = DB::table('ventas')
+                ->leftJoin('cartas', 'ventas.id_carta', '=', 'cartas.id')
+                ->where('cartas.nombre', 'like', '%'.$datos.'%')
+                ->get()
+                ->toArray();
             }
 
             usort($ventas, function($object1, $object2){
