@@ -24,17 +24,24 @@ class AdministradorValido
             $token = $datos->Api_token;
             $usuario = Usuario::where('Api_token', $token)->first(); //devuelve objeto
             if(!$usuario){
-                return response("Api key no vale", 401);
+                $respuesta["status"] = 0;
+                $respuesta["msg"] = "Api key no vale";
+                return response()->json($respuesta);
             }else{
                 $rol = $usuario->rol;
                     if($rol == "Administrador"){
                         return $next($req);
                     }else{
-                        return response("No tienes permisos para hacer eso, tu puesto de trabajo es ".$rol, 401);
+                        $respuesta["status"] = 0;
+                        $respuesta["msg"] = "No tienes permisos para hacer eso, tu puesto de trabajo es ".$rol;
+                        return response()->json($respuesta);
                     }       
             }
         }else{
-            return response("No api token", 401);
+            $respuesta["status"] = 0;
+            $respuesta["msg"] = "No apitoken";
+            return response()->json($respuesta);
+           
         }    
     }
 }

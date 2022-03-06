@@ -56,10 +56,11 @@ class UsuariosController extends Controller
             $token = Hash::make(now().$usuario->email); //creación del token
             $usuario->api_token = $token;
             $usuario->save();
+            $respuesta["status"] = 1;
             $respuesta["msg"] = "Sesión Iniciada";
             $respuesta["token"] = $token;
         }else{
-            $respuesta["msg"] = 401;
+            $respuesta["status"] = 0;
         }
         return response()->json($respuesta);
     }
